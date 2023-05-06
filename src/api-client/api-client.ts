@@ -19,6 +19,10 @@ export const ApiClient = axios.create({
   baseURL: 'https://europe-west1-quickstart-1573558070219.cloudfunctions.net'
 });
 
+// move file stuff to files client
+// rename to filesApiWithBatching
+// move params away
+
 export const withBatching = (
   request: <T>(url: string, config?: AxiosRequestConfig<T>) => Promise<AxiosResponse<T>>,
   url: string

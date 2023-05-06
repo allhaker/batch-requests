@@ -6,6 +6,9 @@ import { ApiClient, withBatching } from './api-client';
 const BATCH_URL = '/file-batch-api';
 const fileIds = ['fileid1', 'fileid2', 'fileid3'];
 
+// fix text
+// add is loading gif
+
 const App = () => {
   let combinedFiles: string[] | undefined;
 
