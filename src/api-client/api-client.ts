@@ -6,9 +6,12 @@ interface FilesResponse {
   }[];
 }
 
+type AxiosFileResponse = AxiosResponse<FilesResponse>;
+type RequestResolveFn = (value: AxiosFileResponse) => void;
+
 interface BatchRequest {
-  incomingRequest: any;
-  resolveFn: any;
+  requestPromise: Promise<AxiosFileResponse>;
+  requestResolveFn: RequestResolveFn;
   ids: string[];
 }
 
@@ -22,19 +25,22 @@ export const withBatching = (
 ) => {
   let batchRequests: BatchRequest[] = [];
 
-  const handleRequest = (ids: string[]): Promise<AxiosResponse<FilesResponse>> => {
-    let resolveFn: any;
-    const returnPromise = new Promise(resolve => {
-      resolveFn = resolve;
+  const handleRequest = (ids: string[]): Promise<AxiosFileResponse> => {
+    let requestResolveFn: RequestResolveFn | undefined;
+    const requestPromise = new Promise<AxiosFileResponse>(resolve => {
+      requestResolveFn = resolve;
     });
-    const incomingRequest: BatchRequest = {
-      incomingRequest: returnPromise,
+
+    if (!requestResolveFn) throw new Error('Internal error');
+
+    const batchRequest: BatchRequest = {
+      requestPromise,
       ids,
-      resolveFn
+      requestResolveFn
     };
 
     if (batchRequests.length === 0) {
-      batchRequests.push(incomingRequest);
+      batchRequests.push(batchRequest);
 
       setTimeout(async () => {
         const combinedIds = batchRequests.reduce<string[]>((ids, request) => {
@@ -46,20 +52,20 @@ export const withBatching = (
         const { items } = requestRes.data;
 
         batchRequests.forEach(savedRequest => {
-          const { resolveFn } = savedRequest;
+          const { requestResolveFn } = savedRequest;
           const response = { ...requestRes };
           const respItems = items.filter(file => !savedRequest.ids.indexOf(file.id));
           response.data = { items: respItems };
-          resolveFn(response);
+          requestResolveFn(response);
         });
 
         batchRequests = [];
       }, 3000);
     } else {
-      batchRequests.push(incomingRequest);
+      batchRequests.push(batchRequest);
     }
 
-    return returnPromise as any;
+    return requestPromise;
   };
   return handleRequest;
 };
