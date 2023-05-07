@@ -1,0 +1,1 @@
+export const BATCH_DUMP_TIMEOUT_MS = 2000;

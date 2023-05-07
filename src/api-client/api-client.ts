@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { BATCH_DUMP_TIMEOUT_MS } from './consts';
 
 interface FilesResponse {
   items: {
@@ -64,7 +65,7 @@ export const withBatching = (
         });
 
         batchRequests = [];
-      }, 3000);
+      }, BATCH_DUMP_TIMEOUT_MS);
     } else {
       batchRequests.push(batchRequest);
     }
