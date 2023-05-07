@@ -42,12 +42,11 @@ const getClientWithBatching = () => {
     return Array.from(new Set(combinedIds));
   };
 
-  // fix type
-  const resolvePendingPromises = (files: any[], resp: any) => {
+  const resolvePendingPromises = (resp: AxiosResponse<FilesResponse>) => {
     batchRequests.forEach(savedRequest => {
       const { requestResolveFn } = savedRequest;
       const response = { ...resp };
-      const respItems = files.filter(file => !savedRequest.ids.indexOf(file.id));
+      const respItems = resp.data.items.filter(file => !savedRequest.ids.indexOf(file.id));
       response.data = { items: respItems };
       requestResolveFn(response);
     });
@@ -56,10 +55,8 @@ const getClientWithBatching = () => {
   const startBatchdDumpTimerAndProcessing = () => {
     setTimeout(async () => {
       const combinedIds = getCombinedBatchIds();
-      const resp = await getFiles(combinedIds);
-      const { items } = resp.data;
-
-      resolvePendingPromises(items, resp);
+      const resp = await getFiles(combinedIds); // add error hanlding
+      resolvePendingPromises(resp);
       batchRequests = [];
     }, BATCH_DUMP_TIMEOUT_MS);
   };
