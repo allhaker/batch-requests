@@ -1,15 +1,14 @@
 import React, { useCallback, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { ApiClient, BATCH_DUMP_TIMEOUT_MS, withBatching } from './api-client';
+import { BATCH_DUMP_TIMEOUT_MS, FilesApi } from './api-client';
 
-const BATCH_URL = '/file-batch-api';
 const fileIds = ['fileid1', 'fileid2', 'fileid3'];
 
 const App = () => {
   let combinedFiles: string[] | undefined;
   const [files, setFiles] = useState<string[]>([]);
-  const getFiles = useCallback(withBatching(ApiClient.get, BATCH_URL), []);
+  const getFiles = useCallback(FilesApi.getClientWithBatching(), []);
 
   const [batchInProgress, setBatchInProgress] = useState(false);
 
