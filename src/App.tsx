@@ -11,20 +11,27 @@ const App = () => {
   const getFiles = useCallback(FilesApi.getClientWithBatching(), []);
 
   const [batchInProgress, setBatchInProgress] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const requestFile = useCallback(
     async (ids: string[]) => {
-      setBatchInProgress(true);
-      const { data } = await getFiles(ids);
-      const newFiles = data.items.map(file => file.id);
+      try {
+        setBatchInProgress(true);
+        const { data } = await getFiles(ids);
+        const newFiles = data.items.map(file => file.id);
 
-      if (!combinedFiles) {
-        combinedFiles = [];
+        if (!combinedFiles) {
+          combinedFiles = [];
+        }
+        combinedFiles = combinedFiles.concat(newFiles);
+        setFiles(Array.from(new Set(combinedFiles)));
+
+        setBatchInProgress(false);
+        setErrorMessage('');
+      } catch (e: any) {
+        setBatchInProgress(false);
+        setErrorMessage(e.message);
       }
-      combinedFiles = combinedFiles.concat(newFiles);
-      setFiles(Array.from(new Set(combinedFiles)));
-
-      setBatchInProgress(false);
     },
     [files]
   );
@@ -53,12 +60,16 @@ const App = () => {
             <i>{batchInProgress.toString()}</i>
           </u>
         </p>
-        <p>
-          Files fetched in last request:{' '}
-          {files.map(file => (
-            <span key={file}>{file} </span>
-          ))}
-        </p>
+        {errorMessage ? (
+          <p>Error occured while fetching files: {errorMessage}</p>
+        ) : (
+          <p>
+            Files fetched in last request:{' '}
+            {files.map(file => (
+              <span key={file}>{file} </span>
+            ))}
+          </p>
+        )}
       </header>
     </div>
   );

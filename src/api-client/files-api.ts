@@ -14,6 +14,7 @@ type RequestResolveFn = (value: AxiosFileResponse) => void;
 interface BatchRequest {
   requestPromise: Promise<AxiosFileResponse>;
   requestResolveFn: RequestResolveFn;
+  requestRejectFn: RequestResolveFn;
   ids: string[];
 }
 
@@ -22,16 +23,19 @@ const getClientWithBatching = () => {
 
   const getBatchRequest = (ids: string[]) => {
     let requestResolveFn: RequestResolveFn | undefined;
-    const requestPromise = new Promise<AxiosFileResponse>(resolve => {
+    let requestRejectFn: RequestResolveFn | undefined;
+    const requestPromise = new Promise<AxiosFileResponse>((resolve, reject) => {
       requestResolveFn = resolve;
+      requestRejectFn = reject;
     });
 
-    if (!requestResolveFn) throw new Error('Application Internal error');
+    if (!requestResolveFn || !requestRejectFn) throw new Error('Application Internal error');
 
     return {
       requestPromise,
       ids,
-      requestResolveFn
+      requestResolveFn,
+      requestRejectFn
     };
   };
 
@@ -42,21 +46,28 @@ const getClientWithBatching = () => {
     return Array.from(new Set(combinedIds));
   };
 
-  const resolvePendingPromises = (resp: AxiosResponse<FilesResponse>) => {
-    batchRequests.forEach(savedRequest => {
-      const { requestResolveFn } = savedRequest;
-      const response = { ...resp };
-      const respItems = resp.data.items.filter(file => !savedRequest.ids.indexOf(file.id));
-      response.data = { items: respItems };
-      requestResolveFn(response);
-    });
-  };
+  const resolvePendingPromises = (ids: string[]) =>
+    getFiles(ids)
+      .then(res => {
+        batchRequests.forEach(savedRequest => {
+          const { requestResolveFn } = savedRequest;
+          const response = { ...res };
+          const respItems = res.data.items.filter(file => !savedRequest.ids.indexOf(file.id));
+          response.data = { items: respItems };
+          requestResolveFn(response);
+        });
+      })
+      .catch(e => {
+        batchRequests.forEach(savedRequest => {
+          const { requestRejectFn } = savedRequest;
+          requestRejectFn(e);
+        });
+      });
 
   const startBatchdDumpTimerAndProcessing = () => {
     setTimeout(async () => {
       const combinedIds = getCombinedBatchIds();
-      const resp = await getFiles(combinedIds); // add error hanlding
-      resolvePendingPromises(resp);
+      await resolvePendingPromises(combinedIds);
       batchRequests = [];
     }, BATCH_DUMP_TIMEOUT_MS);
   };
