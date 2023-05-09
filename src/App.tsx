@@ -49,22 +49,22 @@ const App = () => {
           ))}
         </div>
         <p>
-          Batch dump timeout is{' '}
+          Batch dump timeout is&nbsp;
           <u>
             <i>{BATCH_DUMP_TIMEOUT_MS} ms</i> {/* replace with const */}
           </u>
         </p>
         <p>
-          Batch is in progress{' '}
+          Batch is in progress&nbsp;
           <u>
             <i>{batchInProgress.toString()}</i>
           </u>
         </p>
         {errorMessage ? (
-          <p>Error occured while fetching files: {errorMessage}</p>
+          <p>Error occured while &nbsp fetching files: {errorMessage}</p>
         ) : (
           <p>
-            Files fetched in last request:{' '}
+            Files fetched in last request:&nbsp;
             {files.map(file => (
               <span key={file}>{file} </span>
             ))}
