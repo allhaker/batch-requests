@@ -7,7 +7,7 @@ First, as you can see I used the official `create-react-app` template with TypeS
 
 I had to do minimal setup for linter and tests. It pretty much worked out of the box.
 
-Besides that I choose TypeScript. I have become quite accustomed to using TS over the last few years and I am convinced that in the long run TS saves time as it serves as an extra protection making sure that if the code builds then there is a higher likelyhood the app will actually work.
+Besides that I chose TypeScript. I have become quite accustomed to using TS over the last few years and I am convinced that in the long run TS saves time as it serves as an extra protection making sure that if the code builds then there is a higher likelyhood the app will actually work.
 
 ## Function Over Interceptor
 The exercise text said the following: `Implement an interceptor that handles batching for the given API request. All requests should return the requested files.`
