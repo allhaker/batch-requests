@@ -8,6 +8,10 @@ const apiConfig = { BATCH_DUMP_TIMEOUT_MS: 1, BATCH_URL: '/file-batch-api' };
 jest.mock('./api-client/consts', () => apiConfig);
 
 describe('App component', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   test('fetches and displays files correctly', async () => {
     const { getByText, container } = render(<App />);
     const getIsInProgress = () => getByText('Batch is in progress', { exact: false });
