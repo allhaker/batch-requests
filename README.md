@@ -16,7 +16,7 @@ I first started exploring the interceptor idea. I am not super familiar with Axi
 
 This actually looks suspiciously like your exercise... Did you guys use it as inspiration or was this person doing an interview here?
 
-So, yeah. I checked that code in the link. I think it's got quite a few problems. It's hard to read - it's well written but it's quite complicated. Besides it's going quite deep into internals of Axios and some things there like `HttpAdapter` are actually not types. I think Axios overall has somewhat poor types.
+So, yeah. I checked that code in the link. I think it's got quite a few problems. It's hard to read - it's well written but it's quite complicated. Besides it's going quite deep into internals of Axios and some things there like `HttpAdapter` are actually not typed. I think Axios overall has somewhat poor types.
 
 Right away then I thought that I want to use a more native approach with promises. I don't need to work all the adapters and know any internals.
 
