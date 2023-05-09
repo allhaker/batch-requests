@@ -52,7 +52,7 @@ const getClientWithBatching = () => {
         batchRequests.forEach(savedRequest => {
           const { requestResolveFn } = savedRequest;
           const response = { ...res };
-          const respItems = res.data.items.filter(file => !savedRequest.ids.indexOf(file.id));
+          const respItems = res.data.items.filter(file => savedRequest.ids.indexOf(file.id) !== -1);
           response.data = { items: respItems };
           requestResolveFn(response);
         });
