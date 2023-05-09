@@ -56,7 +56,7 @@ So, I decided to add an off the scope variable in the render and just store data
 Otherwise, I did not really have any major challenges. I can share that writing tests is boring so I have been playing with ChatGPT. I did have to fix quite a lot but overall I think it had sped me up.
 
 ## Give another good use case for batching requests and its benefits
-What me implemented here is pretty much an example of Proxy pattern except I made it not completely oblivious to the client.
+What we implemented here is pretty much an example of Proxy pattern except I made it not completely oblivious to the client.
 
 Any list or any situation where you are rendering some components in quantity and where these components individually send requests is a use case for this kinda batching (I'd actually rather call it squashing).
 
