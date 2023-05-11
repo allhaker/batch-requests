@@ -6,32 +6,33 @@ import { BATCH_DUMP_TIMEOUT_MS, FilesApi } from './api-client';
 const fileIds = ['fileid1', 'fileid2', 'fileid3'];
 
 const App = () => {
-  let combinedFiles: string[] | undefined;
+  let combinedFiles: string[] = [];
+
   const [files, setFiles] = useState<string[]>([]);
   const getFiles = useCallback(FilesApi.getClientWithBatching(), []);
 
   const [batchInProgress, setBatchInProgress] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const requestFile = async (ids: string[]) => {
-    try {
-      setBatchInProgress(true);
-      const { data } = await getFiles(ids);
-      const newFiles = data.items.map(file => file.id);
+  const requestFile = useCallback(
+    async (ids: string[]) => {
+      try {
+        setBatchInProgress(true);
+        const { data } = await getFiles(ids);
+        const newFiles = data.items.map(file => file.id);
 
-      if (!combinedFiles) {
-        combinedFiles = [];
+        combinedFiles = combinedFiles.concat(newFiles);
+        setFiles(Array.from(new Set(combinedFiles)));
+
+        setBatchInProgress(false);
+        setErrorMessage('');
+      } catch (e) {
+        setBatchInProgress(false);
+        setErrorMessage(e instanceof Error ? e.message : 'Unknown Error Occured');
       }
-      combinedFiles = combinedFiles.concat(newFiles);
-      setFiles(Array.from(new Set(combinedFiles)));
-
-      setBatchInProgress(false);
-      setErrorMessage('');
-    } catch (e) {
-      setBatchInProgress(false);
-      setErrorMessage(e instanceof Error ? e.message : 'Unknown Error Occured');
-    }
-  };
+    },
+    [files]
+  );
 
   return (
     <div className="App">
