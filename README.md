@@ -23,10 +23,10 @@ Right away then I thought that I want to use a more native approach with promise
 Well, you can probably read the code. It's not the easiest to understand but basically it's quite simple.
 1. On first request start the timer
 2. Return promise back the caller so that we keep this event loop event hanging
-3. Continue receive requests and returing promises
+3. Continue receiving requests and returing promises
 4. When timer is up then collect all params from all requests while removing duplicates
-5. Make 1 actual requests with combined payload
-6. When requests is done then filter out the results according to params and resolve right promises with right results
+5. Make 1 actual request with combined payload
+6. When request is done then filter out the results according to params and resolve right promises with right results
 7. Reset batch requests collection and ready to start the cycle again
 
 There is also an error scenario if request if finished with an error. Then just reject all promises.
