@@ -13,28 +13,25 @@ const App = () => {
   const [batchInProgress, setBatchInProgress] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const requestFile = useCallback(
-    async (ids: string[]) => {
-      try {
-        setBatchInProgress(true);
-        const { data } = await getFiles(ids);
-        const newFiles = data.items.map(file => file.id);
+  const requestFile = async (ids: string[]) => {
+    try {
+      setBatchInProgress(true);
+      const { data } = await getFiles(ids);
+      const newFiles = data.items.map(file => file.id);
 
-        if (!combinedFiles) {
-          combinedFiles = [];
-        }
-        combinedFiles = combinedFiles.concat(newFiles);
-        setFiles(Array.from(new Set(combinedFiles)));
-
-        setBatchInProgress(false);
-        setErrorMessage('');
-      } catch (e: any) {
-        setBatchInProgress(false);
-        setErrorMessage(e.message);
+      if (!combinedFiles) {
+        combinedFiles = [];
       }
-    },
-    [files]
-  );
+      combinedFiles = combinedFiles.concat(newFiles);
+      setFiles(Array.from(new Set(combinedFiles)));
+
+      setBatchInProgress(false);
+      setErrorMessage('');
+    } catch (e) {
+      setBatchInProgress(false);
+      setErrorMessage(e instanceof Error ? e.message : 'Unknown Error Occured');
+    }
+  };
 
   return (
     <div className="App">
